@@ -1,10 +1,20 @@
 /** @type {import('next').NextConfig} */
+
+function getSiteHostname() {
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+  if (!siteUrl) return "localhost";
+  try {
+    const formattedUrl = siteUrl.startsWith("http") ? siteUrl : `https://${siteUrl}`;
+    return new URL(formattedUrl).hostname;
+  } catch {
+    return "localhost";
+  }
+}
+
 const nextConfig = {
-  // Build ke waqt ESLint warnings aur errors ignore honge
   eslint: {
     ignoreDuringBuilds: true,
   },
-  // Type check errors ki wajah se build nahi rukegi
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -17,12 +27,7 @@ const nextConfig = {
       },
       {
         protocol: "https",
-        // Also allow a custom R2 public domain if one is configured —
-        // Next.js requires an explicit allowlist rather than a wildcard
-        // for production hostnames not under *.r2.dev.
-        hostname: process.env.NEXT_PUBLIC_SITE_URL
-          ? new URL(process.env.NEXT_PUBLIC_SITE_URL).hostname
-          : "localhost",
+        hostname: getSiteHostname(),
       },
     ],
   },
@@ -30,7 +35,6 @@ const nextConfig = {
   async headers() {
     return [
       {
-        // Applies to every route. See SECURITY.md "Security headers".
         source: "/:path*",
         headers: [
           { key: "X-Content-Type-Options", value: "nosniff" },
