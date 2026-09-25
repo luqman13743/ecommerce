@@ -5,7 +5,7 @@ const accessKeyId = process.env.R2_ACCESS_KEY_ID;
 const secretAccessKey = process.env.R2_SECRET_ACCESS_KEY;
 
 if ((!accountId || !accessKeyId || !secretAccessKey) && process.env.NODE_ENV === "production") {
-  throw new Error("R2 credentials are not fully set");
+  console.warn("R2 credentials are not fully set");
 }
 
 // Server-only client. R2 credentials must never reach the browser —
