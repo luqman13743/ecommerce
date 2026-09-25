@@ -7,10 +7,22 @@ import { SiteFooter } from "@/components/site-footer";
 const fraunces = Fraunces({ subsets: ["latin"], variable: "--font-fraunces", display: "swap" });
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+// Safe URL resolver taake empty string ya invalid input par build crash na ho
+function resolveSiteUrl(): URL {
+  const raw = process.env.NEXT_PUBLIC_SITE_URL;
+  if (!raw || raw.trim() === "") {
+    return new URL("https://ecommerce-git-main-mla6.vercel.app");
+  }
+  try {
+    const formatted = raw.startsWith("http") ? raw : `https://${raw}`;
+    return new URL(formatted);
+  } catch {
+    return new URL("https://ecommerce-git-main-mla6.vercel.app");
+  }
+}
 
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
+  metadataBase: resolveSiteUrl(),
   title: { default: "Shop — quality goods, honest prices", template: "%s — Shop" },
   description: "Browse a curated catalog of quality goods with fast delivery across Pakistan.",
   openGraph: {
